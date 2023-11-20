@@ -66,11 +66,12 @@ class ApiService {
     final url = Uri.parse('$baseUrl/$order');
     final response = await http.get(url);
     if (response.statusCode == 200) {
-      final movies = jsonDecode(response.body);
+      final movies = jsonDecode(utf8.decode(response.bodyBytes));
       for (var movie in movies['results']) {
         final mov = MovieModel.fromJson(movie);
         movieInstances.add(mov);
       }
+
       return movieInstances;
     }
     throw Error();
@@ -80,7 +81,7 @@ class ApiService {
     final url = Uri.parse('$baseUrl/$movie?id=$id');
     final response = await http.get(url);
     if (response.statusCode == 200) {
-      final movie = jsonDecode(response.body);
+      final movie = jsonDecode(utf8.decode(response.bodyBytes));
       final mov = MovieDetailModel.fromJson(movie);
       return mov;
     }
@@ -250,6 +251,7 @@ class _DetailScreenState extends State<DetailScreen> {
     return Scaffold(
         extendBodyBehindAppBar: true,
         appBar: AppBar(
+          centerTitle: false,
           title: const Text(
             'Back to list',
             style: TextStyle(
