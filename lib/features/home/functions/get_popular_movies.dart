@@ -16,13 +16,23 @@ class PopularMoviesView extends StatefulWidget {
 }
 
 class _PopularMoviesViewState extends State<PopularMoviesView> {
-  final PageController pageController = PageController(viewportFraction: 0.87);
+  late PageController pageController = PageController(viewportFraction: 0.87);
+  late List<MovieModel> extendedItems; // 페이지뷰에 사용될 아이템 리스트
   int currentPage = 0;
   double pageOffset = 0;
 
   @override
   void initState() {
     super.initState();
+    extendedItems = [
+      widget.snapshot.data!.last, // 리스트 시작 부분에 마지막 아이템을 추가
+      ...widget.snapshot.data!, // 원본 데이터
+      widget.snapshot.data!.first, // 리스트 끝 부분에 첫 번째 아이템을 추가
+    ];
+    pageController = PageController(
+      viewportFraction: 0.87,
+      initialPage: 1, // 실제 첫 번째 아이템이 표시되게 초기 페이지를 1로 설정합니다.
+    );
 
     pageController.addListener(() {
       int next = pageController.page!.round();
@@ -31,6 +41,12 @@ class _PopularMoviesViewState extends State<PopularMoviesView> {
           currentPage = next;
           pageOffset = pageController.page!;
         });
+        // 시작 또는 끝에 도달하면 순환 효과를 위해 페이지를 조정합니다.
+        if (currentPage == 0) {
+          pageController.jumpToPage(extendedItems.length - 2);
+        } else if (currentPage == extendedItems.length - 1) {
+          pageController.jumpToPage(1);
+        }
       }
     });
   }
@@ -48,9 +64,9 @@ class _PopularMoviesViewState extends State<PopularMoviesView> {
       children: [
         PageView.builder(
           controller: pageController,
-          itemCount: widget.snapshot.data!.length,
+          itemCount: extendedItems.length,
           itemBuilder: (context, index) {
-            final movie = widget.snapshot.data![index];
+            final movie = extendedItems[index];
             final heroTag = 'movie-${movie.id}-${Random().nextInt(1000000)}';
             final backgroundImage = index.isEven
                 ? 'assets/images/green.png'
@@ -146,7 +162,7 @@ class _PopularMoviesViewState extends State<PopularMoviesView> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Container(
-                  width: 77,
+                  width: 88,
                   height: 22,
                   decoration: BoxDecoration(
                     color: Colors.black,
@@ -154,7 +170,7 @@ class _PopularMoviesViewState extends State<PopularMoviesView> {
                   ),
                   child: Center(
                     child: Text(
-                      "Sci-Fi",
+                      "Animation",
                       style: Theme.of(context).textTheme.labelMedium,
                     ),
                   ),
@@ -163,12 +179,13 @@ class _PopularMoviesViewState extends State<PopularMoviesView> {
                 SizedBox(
                   width: 300,
                   child: Text(
-                    widget.snapshot.data!.isNotEmpty
+                    extendedItems.length < 22
                         ? widget
                             .snapshot
                             .data![currentPage % widget.snapshot.data!.length]
                             .title
-                        : '',
+                        : extendedItems[currentPage % extendedItems.length]
+                            .title,
                     overflow: TextOverflow.ellipsis,
                     maxLines: 2,
                     style: Theme.of(context).textTheme.displayLarge,
