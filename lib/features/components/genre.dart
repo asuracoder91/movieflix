@@ -21,7 +21,7 @@ class Genre {
     "37": "Western",
   };
 
-  static String get(String genreNum) {
-    return genreMap[genreNum] ?? "ETC";
+  static String get(int genreNum) {
+    return genreMap[genreNum.toString()] ?? "ETC";
   }
 }

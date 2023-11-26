@@ -1,9 +1,11 @@
+import 'dart:async';
 import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 
 import '../../../model/movie_model.dart';
+import '../../components/genre.dart';
 import '../screens/detail_screen.dart';
 
 class PopularMoviesView extends StatefulWidget {
@@ -20,6 +22,23 @@ class _PopularMoviesViewState extends State<PopularMoviesView> {
   late List<MovieModel> copyData;
   int currentPage = 1;
   double pageOffset = 0;
+  Timer? _timer; // 자동 페이지 넘김을 위한 타이머
+
+  void resetTimer() {
+    // 타이머를 취소하고 다시 시작
+    _timer?.cancel();
+    _timer = Timer.periodic(const Duration(seconds: 5), (Timer timer) {
+      int nextPage = pageController.page!.round() + 1;
+      if (nextPage >= copyData.length) {
+        nextPage = 1; // 처음으로 돌아간다
+      }
+      pageController.animateToPage(
+        nextPage,
+        duration: const Duration(milliseconds: 150),
+        curve: Curves.easeIn,
+      );
+    });
+  }
 
   @override
   void initState() {
@@ -32,6 +51,22 @@ class _PopularMoviesViewState extends State<PopularMoviesView> {
     ];
     pageController =
         PageController(viewportFraction: 0.87, initialPage: currentPage);
+
+    // 2초마다 페이지를 자동으로 넘깁니다.
+    _timer = Timer.periodic(const Duration(seconds: 5), (Timer timer) {
+      if (currentPage < copyData.length - 1) {
+        currentPage++;
+      } else {
+        currentPage = 1;
+      }
+
+      pageController.animateToPage(
+        currentPage,
+        duration: const Duration(milliseconds: 150),
+        curve: Curves.easeIn,
+      );
+    });
+
     pageController.addListener(() {
       int next = pageController.page!.round();
       if (currentPage != next) {
@@ -45,6 +80,7 @@ class _PopularMoviesViewState extends State<PopularMoviesView> {
 
   @override
   void dispose() {
+    _timer?.cancel();
     pageController.dispose();
     super.dispose();
   }
@@ -58,6 +94,10 @@ class _PopularMoviesViewState extends State<PopularMoviesView> {
         PageView.builder(
           controller: pageController,
           itemCount: copyData.length,
+          onPageChanged: (index) {
+            currentPage = index;
+            resetTimer();
+          },
           itemBuilder: (context, index) {
             final movie = copyData[index];
             final heroTag = 'movie-${movie.id}-${Random().nextInt(1000000)}';
@@ -163,7 +203,10 @@ class _PopularMoviesViewState extends State<PopularMoviesView> {
                   ),
                   child: Center(
                     child: Text(
-                      "Animation",
+                      copyData.isEmpty
+                          ? Genre.get(widget.snapshot.data![0].genres[0])
+                          : Genre.get(copyData[currentPage % copyData.length]
+                              .genres[0]),
                       style: Theme.of(context).textTheme.labelMedium,
                     ),
                   ),

@@ -35,7 +35,7 @@ ListView getComingSoon(
                 width: width,
                 height: height,
                 decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(10),
+                  borderRadius: BorderRadius.circular(2),
                   image: DecorationImage(
                     image: NetworkImage(
                       'https://image.tmdb.org/t/p/w500${movie.poster}',
@@ -45,7 +45,7 @@ ListView getComingSoon(
                 ),
               ),
             ),
-            const SizedBox(height: 10),
+            const SizedBox(height: 4),
             SizedBox(
               width: width,
               child: Text(
@@ -53,7 +53,7 @@ ListView getComingSoon(
                 overflow: TextOverflow.ellipsis,
                 maxLines: 2,
                 style: const TextStyle(
-                  fontSize: 14,
+                  fontSize: 12,
                 ),
               ),
             ),
@@ -62,7 +62,7 @@ ListView getComingSoon(
       );
     },
     separatorBuilder: (context, index) => const SizedBox(
-      width: 10,
+      width: 4,
     ),
   );
 }
