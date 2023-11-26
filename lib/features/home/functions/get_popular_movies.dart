@@ -16,24 +16,22 @@ class PopularMoviesView extends StatefulWidget {
 }
 
 class _PopularMoviesViewState extends State<PopularMoviesView> {
-  late PageController pageController = PageController(viewportFraction: 0.87);
-  late List<MovieModel> extendedItems; // 페이지뷰에 사용될 아이템 리스트
-  int currentPage = 0;
+  late PageController pageController;
+  late List<MovieModel> copyData;
+  int currentPage = 1;
   double pageOffset = 0;
 
   @override
   void initState() {
     super.initState();
-    extendedItems = [
-      widget.snapshot.data!.last, // 리스트 시작 부분에 마지막 아이템을 추가
-      ...widget.snapshot.data!, // 원본 데이터
-      widget.snapshot.data!.first, // 리스트 끝 부분에 첫 번째 아이템을 추가
+    if (widget.snapshot.data!.isEmpty) return;
+    copyData = [
+      widget.snapshot.data!.last,
+      ...widget.snapshot.data!,
+      widget.snapshot.data!.first,
     ];
-    pageController = PageController(
-      viewportFraction: 0.87,
-      initialPage: 1, // 실제 첫 번째 아이템이 표시되게 초기 페이지를 1로 설정합니다.
-    );
-
+    pageController =
+        PageController(viewportFraction: 0.87, initialPage: currentPage);
     pageController.addListener(() {
       int next = pageController.page!.round();
       if (currentPage != next) {
@@ -41,12 +39,6 @@ class _PopularMoviesViewState extends State<PopularMoviesView> {
           currentPage = next;
           pageOffset = pageController.page!;
         });
-        // 시작 또는 끝에 도달하면 순환 효과를 위해 페이지를 조정합니다.
-        if (currentPage == 0) {
-          pageController.jumpToPage(extendedItems.length - 2);
-        } else if (currentPage == extendedItems.length - 1) {
-          pageController.jumpToPage(1);
-        }
       }
     });
   }
@@ -57,6 +49,7 @@ class _PopularMoviesViewState extends State<PopularMoviesView> {
     super.dispose();
   }
 
+  //무한 스크롤 구현 못함.. 일단 보류
   @override
   Widget build(BuildContext context) {
     return Stack(
@@ -64,9 +57,9 @@ class _PopularMoviesViewState extends State<PopularMoviesView> {
       children: [
         PageView.builder(
           controller: pageController,
-          itemCount: extendedItems.length,
+          itemCount: copyData.length,
           itemBuilder: (context, index) {
-            final movie = extendedItems[index];
+            final movie = copyData[index];
             final heroTag = 'movie-${movie.id}-${Random().nextInt(1000000)}';
             final backgroundImage = index.isEven
                 ? 'assets/images/green.png'
@@ -179,13 +172,9 @@ class _PopularMoviesViewState extends State<PopularMoviesView> {
                 SizedBox(
                   width: 300,
                   child: Text(
-                    extendedItems.length < 22
-                        ? widget
-                            .snapshot
-                            .data![currentPage % widget.snapshot.data!.length]
-                            .title
-                        : extendedItems[currentPage % extendedItems.length]
-                            .title,
+                    copyData.isEmpty
+                        ? widget.snapshot.data![0].title
+                        : copyData[currentPage % copyData.length].title,
                     overflow: TextOverflow.ellipsis,
                     maxLines: 2,
                     style: Theme.of(context).textTheme.displayLarge,
