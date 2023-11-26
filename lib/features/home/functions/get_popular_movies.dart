@@ -6,7 +6,7 @@ import 'package:gap/gap.dart';
 
 import '../../../model/movie_model.dart';
 import '../../components/genre.dart';
-import '../screens/detail_screen.dart';
+import '../screens/poster_screen.dart';
 
 class PopularMoviesView extends StatefulWidget {
   final AsyncSnapshot<List<MovieModel>> snapshot;
@@ -110,7 +110,7 @@ class _PopularMoviesViewState extends State<PopularMoviesView> {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => DetailScreen(
+                    builder: (context) => PosterScreen(
                         title: movie.title,
                         poster: movie.poster,
                         id: movie.id,

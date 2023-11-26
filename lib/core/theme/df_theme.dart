@@ -38,6 +38,12 @@ abstract class DFTheme {
         fontWeight: FontWeight.w400,
         color: DFColors.textColor,
       ),
+      headlineLarge: TextStyle(
+        fontSize: 24,
+        fontWeight: FontWeight.w600,
+        letterSpacing: -0.5,
+        color: DFColors.labelColor,
+      ),
       labelMedium: TextStyle(
         fontSize: 14,
         fontWeight: FontWeight.w500,
