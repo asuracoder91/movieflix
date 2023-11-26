@@ -15,4 +15,6 @@ abstract class DFIcons {
     FontAwesomeIcons.chevronLeft,
     color: Color(0xFFC9C9C9),
   );
+
+  static const IconData arrowUp = Icons.keyboard_arrow_up;
 }

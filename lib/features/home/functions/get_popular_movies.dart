@@ -107,16 +107,40 @@ class _PopularMoviesViewState extends State<PopularMoviesView> {
 
             return GestureDetector(
               onTap: () {
+                _timer?.cancel(); // Detail로 넘어갈 때 타이머 멈추기
                 Navigator.push(
                   context,
-                  MaterialPageRoute(
-                    builder: (context) => PosterScreen(
-                        title: movie.title,
-                        poster: movie.poster,
-                        id: movie.id,
-                        tag: heroTag),
+                  PageRouteBuilder(
+                    pageBuilder: (context, animation, secondaryAnimation) =>
+                        PosterScreen(
+                            title: movie.title,
+                            poster: movie.poster,
+                            id: movie.id,
+                            tag: heroTag),
+                    transitionsBuilder:
+                        (context, animation, secondaryAnimation, child) {
+                      var begin = 0.0;
+                      var end = 1.0;
+                      var curve = Curves.easeInOut;
+
+                      var tween = Tween(begin: begin, end: end).chain(
+                        CurveTween(curve: curve),
+                      );
+
+                      return ScaleTransition(
+                        scale: animation.drive(tween),
+                        child: child,
+                      );
+                    },
+                    transitionDuration:
+                        const Duration(milliseconds: 150), // 전환 시간 설정
+                    reverseTransitionDuration:
+                        const Duration(milliseconds: 100),
                   ),
-                );
+                ).then((_) {
+                  // 타이머를 다시 시작
+                  resetTimer();
+                });
               },
               child: AnimatedBuilder(
                 animation: pageController,
@@ -214,13 +238,18 @@ class _PopularMoviesViewState extends State<PopularMoviesView> {
                 const Gap(7),
                 SizedBox(
                   width: 300,
-                  child: Text(
-                    copyData.isEmpty
+                  child: Hero(
+                    tag: copyData.isEmpty
                         ? widget.snapshot.data![0].title
                         : copyData[currentPage % copyData.length].title,
-                    overflow: TextOverflow.ellipsis,
-                    maxLines: 2,
-                    style: Theme.of(context).textTheme.displayLarge,
+                    child: Text(
+                      copyData.isEmpty
+                          ? widget.snapshot.data![0].title
+                          : copyData[currentPage % copyData.length].title,
+                      overflow: TextOverflow.ellipsis,
+                      maxLines: 2,
+                      style: Theme.of(context).textTheme.displayLarge,
+                    ),
                   ),
                 ),
               ],
