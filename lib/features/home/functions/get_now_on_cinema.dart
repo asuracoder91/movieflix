@@ -7,11 +7,11 @@ import '../../../model/movie_model.dart';
 
 ListView getNowOnCinema(
     AsyncSnapshot<List<MovieModel>> snapshot, double width, double height) {
-  // 필름 홀 사이의 간격과 크기를 정의합니다.
+  // 필름 홀 사이의 간격과 크기
   const double holeSize = 10.0;
   const double holeSpacing = 15.0;
-  const double filmHeight = 20.0; // 필름 홀의 높이를 정의합니다.
-  const double borderRadius = 2.0; // 필름 홀의 모서리 둥글기
+  const double filmHeight = 20.0; // 필름 홀의 높이
+  const double borderRadius = 2.0; // 필름 홀의 모서리
 
   return ListView.builder(
     scrollDirection: Axis.horizontal,
@@ -66,7 +66,7 @@ ListView getNowOnCinema(
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceAround,
                     children: List.generate(
-                      (width / holeSpacing).round(), // 필름 홀의 개수를 계산합니다.
+                      (width / holeSpacing).round(), // 필름 홀의 개수를 계산
                       (index) => Container(
                         width: holeSize,
                         height: holeSize,

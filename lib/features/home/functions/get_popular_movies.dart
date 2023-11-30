@@ -52,7 +52,7 @@ class _PopularMoviesViewState extends State<PopularMoviesView> {
     pageController =
         PageController(viewportFraction: 0.87, initialPage: currentPage);
 
-    // 2초마다 페이지를 자동으로 넘깁니다.
+    // 5초마다 페이지를 자동으로 넘긴다
     _timer = Timer.periodic(const Duration(seconds: 5), (Timer timer) {
       if (currentPage < copyData.length - 1) {
         currentPage++;

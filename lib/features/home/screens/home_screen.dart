@@ -56,8 +56,7 @@ class HomeScreen extends StatelessWidget {
               children: [
                 Container(
                   height: kToolbarHeight,
-                  color: Theme.of(context)
-                      .scaffoldBackgroundColor, // AppBar 상단의 색상을 설정합니다.
+                  color: Theme.of(context).scaffoldBackgroundColor,
                 ),
                 Expanded(
                   child: Container(
